@@ -5,7 +5,8 @@ import TwitterLoginButton from "./TwitterLoginButton";
 import { openWindow, observeWindow } from "./services/window";
 import {
   obtainOauthRequestToken,
-  obtainOauthAccessToken
+  obtainOauthAccessToken,
+  obtainTwitterAccount
 } from "./services/oauth1";
 
 export default class TwitterLoginComponent extends React.Component<
@@ -52,13 +53,27 @@ export default class TwitterLoginComponent extends React.Component<
             oauthVerifier: data.oauthVerifier,
             method: "POST"
           });
+
+          const account = await obtainTwitterAccount({
+            apiUrl:
+              "https://api.twitter.com/1.1/account/verify_credentials.json",
+            consumerKey,
+            consumerSecret,
+            oauthToken: accessTokenData.oauth_token,
+            oauthTokenSecret: accessTokenData.oauth_token_secret,
+            method: "GET",
+            include_email: "true"
+          });
+
+          const result = { ...accessTokenData, ...account };
+
           const { popup } = this.state;
           this.setState(
             {
               isCompleted: true
             },
             () => {
-              authCallback && authCallback(undefined, accessTokenData);
+              authCallback && authCallback(undefined, result);
               popup && popup.close();
             }
           );

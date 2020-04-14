@@ -34,7 +34,6 @@ interface TwitterLoginProps {
   className?: string;
 }
 
-
 interface TwitterLoginState {
   isCompleted: boolean;
   popup?: Window;
@@ -45,7 +44,11 @@ declare class TwitterLogin extends React.Component<
   TwitterLoginState
 > {}
 
-export { TwitterLogin, TwitterLoginProps, TwitterLoginState, TwitterLoginButtonTheme };
+export {
+  TwitterLogin,
+  TwitterLoginProps,
+  TwitterLoginState,
+  TwitterLoginButtonTheme
+};
 
 export default TwitterLogin;
-

@@ -1,4 +1,8 @@
-import { requestTokenSignature, accessTokenSignature } from "./signature";
+import {
+  requestTokenSignature,
+  accessTokenSignature,
+  accessResourceSignature
+} from "./signature";
 
 interface RequestTokenResponse {
   oauth_token: string;
@@ -73,4 +77,43 @@ export const obtainOauthAccessToken = async ({
   });
   const responseText = await res.text();
   return parseOAuthRequestToken(responseText);
+};
+
+export const obtainTwitterAccount = async ({
+  consumerKey,
+  consumerSecret,
+  oauthToken,
+  oauthTokenSecret,
+  method,
+  apiUrl,
+  include_email
+}: {
+  method: string;
+  apiUrl: string;
+  consumerKey: string;
+  consumerSecret: string;
+  oauthToken: string;
+  oauthTokenSecret: string;
+  include_email: string;
+}) => {
+  const oauthSignature = accessResourceSignature({
+    method,
+    apiUrl,
+    consumerKey,
+    consumerSecret,
+    oauthToken,
+    oauthTokenSecret,
+    include_email
+  });
+  const res = await fetch(
+    `https://cors-anywhere.herokuapp.com/${apiUrl}?include_email=${include_email}`,
+    {
+      method,
+      headers: {
+        Authorization: `OAuth ${oauthSignature}`
+      }
+    }
+  );
+  const responseJson = await res.json();
+  return responseJson;
 };
